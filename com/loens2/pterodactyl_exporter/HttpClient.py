@@ -11,7 +11,6 @@ def client_init():
     global client
     global headers
     if environ['HTTPS']:
-
         client = http.client.HTTPSConnection(environ['HOST'], 443)
     else:
         client = http.client.HTTPConnection(environ['HOST'], 80)

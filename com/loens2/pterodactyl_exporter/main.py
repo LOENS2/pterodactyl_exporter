@@ -1,7 +1,6 @@
 import argparse
-from os import environ
-import time
 import http.client
+import time
 
 import HttpClient
 import HttpServer
@@ -29,9 +28,8 @@ if __name__ == '__main__':
             HttpClient.get_server()
             metrics = HttpClient.get_metrics()
             HttpServer.serve_metrics(metrics)
+            time.sleep(10)
         except http.client.RemoteDisconnected:
             print("API does not respond!")
         finally:
             continue
-
-        time.sleep(10)
