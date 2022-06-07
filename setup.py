@@ -1,12 +1,18 @@
 from setuptools import setup
+import pterodactyl_exporter
 
 setup(
     name='pterodactyl_exporter',
-    version='1.0',
-    packages=['com', 'com.loens2', 'com.loens2.pterodactyl_exporter'],
+    version=pterodactyl_exporter.__version__,
+    packages=['pterodactyl_exporter'],
     url='https://loens2.com',
     license='MIT',
-    author='LOENS2',
-    author_email='leo.suessmeyer@gmail.com',
-    description='Metrics exporter for Pterodactyl'
+    author=pterodactyl_exporter.__version__,
+    author_email='info@loens2.com',
+    description='Metrics exporter for Pterodactyl',
+    entry_points={
+            'console_scripts': [
+                'pterodactyl_exporter=pterodactyl_exporter.pterodactyl_exporter:main'
+            ]
+        }
 )
