@@ -5,7 +5,7 @@ setup(
     name='pterodactyl_exporter',
     version=pterodactyl_exporter.__version__,
     packages=['pterodactyl_exporter'],
-    url='https://loens2.com',
+    url='https://github.com/LOENS2/pterodactyl_exporter',
     license='MIT',
     author=pterodactyl_exporter.__version__,
     author_email='info@loens2.com',

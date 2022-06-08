@@ -1,20 +1,19 @@
 import http.client
 import json
-from os import environ
 
 client = None
 headers = None
 srv = None
 
 
-def client_init():
+def client_init(config_file: dict):
     global client
     global headers
-    if environ['HTTPS']:
-        client = http.client.HTTPSConnection(environ['HOST'], 443)
+    if config_file['https']:
+        client = http.client.HTTPSConnection(config_file['host'], 443)
     else:
-        client = http.client.HTTPConnection(environ['HOST'], 80)
-    headers = {"Authorization": f"Bearer {environ['API_KEY']}", "Content-Type": "application/json",
+        client = http.client.HTTPConnection(config_file['host'], 80)
+    headers = {"Authorization": f"Bearer {config_file['api_key']}", "Content-Type": "application/json",
                "Accept": "Application/vnd.pterodactyl.v1+json"}
 
 
@@ -37,7 +36,6 @@ def get_server():
     }
     client.request("GET", "/api/client/", "", headers)
     servers = json.loads(client.getresponse().read())
-    print(servers)
     for x in servers['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])

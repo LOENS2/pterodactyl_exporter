@@ -1,4 +1,8 @@
-from prometheus_client import start_http_server, Gauge
+from prometheus_client import Gauge
+from prometheus_client.twisted import MetricsResource
+from twisted.web.server import Site
+from twisted.web.resource import Resource
+from twisted.internet import reactor
 
 label_names = ("server_name", "id",)
 
@@ -16,7 +20,12 @@ max_cpu = Gauge("pterodactyl_server_max_cpu_absolute", "Maximum cpu load allowed
 
 
 def init_metrics():
-    start_http_server(8000)
+    root = Resource()
+    root.putChild(b'metrics', MetricsResource())
+
+    factory = Site(root)
+    reactor.listenTCP(9531, factory)
+    reactor.run()
 
 
 def serve_metrics(metrics):

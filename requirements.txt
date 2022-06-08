@@ -1,0 +1,4 @@
+python-dotenv~=0.20.0
+setuptools~=60.2.0
+PyYAML~=6.0
+Twisted~=22.4.0

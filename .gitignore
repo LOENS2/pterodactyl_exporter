@@ -1,1 +1,5 @@
 /.env
+/dist/
+/build/
+/pterodactyl_exporter.egg-info/
+/secret_config.yml
