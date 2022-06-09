@@ -10,7 +10,7 @@ def client_init(config_file: dict):
     global client
     global headers
     if config_file['https']:
-        client = http.client.HTTPSConnection(config_file['host'], 443)
+        client = http.client.HTTPSConnection(config_file['host'], 443, check_hostname=not config_file['ignore_ssl'])
     else:
         client = http.client.HTTPConnection(config_file['host'], 80)
     headers = {"Authorization": f"Bearer {config_file['api_key']}", "Content-Type": "application/json",
@@ -44,7 +44,6 @@ def get_server():
         srv["max_disk"].append(x['attributes']['limits']['disk'])
         srv["io"].append(x['attributes']['limits']['io'])
         srv["max_cpu"].append(x['attributes']['limits']['cpu'])
-
 
 
 def get_metrics():
