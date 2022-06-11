@@ -50,10 +50,10 @@ def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         metrics = json.loads(client.getresponse().read())["attributes"]['resources']
-        srv["memory"].append(metrics["memory_bytes"]/106496)
+        srv["memory"].append(metrics["memory_bytes"]/1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
-        srv["disk"].append(metrics["disk_bytes"]/106496)
-        srv["rx"].append(metrics["network_rx_bytes"]/106496)
-        srv["tx"].append(metrics["network_tx_bytes"]/106496)
+        srv["disk"].append(metrics["disk_bytes"]/1000000)
+        srv["rx"].append(metrics["network_rx_bytes"]/1000000)
+        srv["tx"].append(metrics["network_tx_bytes"]/1000000)
         srv["uptime"].append(metrics["uptime"])
     return srv

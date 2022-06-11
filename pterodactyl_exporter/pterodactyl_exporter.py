@@ -3,7 +3,7 @@ import http.client
 import time
 import sys
 
-import config_load
+from pterodactyl_exporter import config_load
 import http_client
 import http_server
 

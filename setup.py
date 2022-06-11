@@ -13,7 +13,7 @@ setup(
     install_requires=open('requirements.txt').readlines(),
     entry_points={
             'console_scripts': [
-                'pterodactyl_exporter=pterodactyl_exporter.__main__:main'
+                'pterodactyl_exporter=pterodactyl_exporter:main'
             ]
         }
 )
