@@ -3,9 +3,7 @@ import http.client
 import time
 import sys
 
-from pterodactyl_exporter import config_load
-import http_client
-import http_server
+from pterodactyl_exporter import config_load, http_client, http_server
 
 
 def parse_args():
