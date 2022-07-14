@@ -13,6 +13,6 @@ To install a dev build use pip:
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pterodactyl-exporter
 ```
 
-You can download the JSON for a Grafana Dashboard [here](https://www.loens2.com/wp-content/uploads/2022/07/Pterodactyl-Server-1657722958282.json).
+To get the Grafana dashboard, import id `16575`.
 
 (c) LOENS2 2022
