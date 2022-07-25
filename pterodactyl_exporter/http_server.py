@@ -16,7 +16,6 @@ io = Gauge("pterodactyl_server_io", "IO weight of server", label_names)
 max_cpu = Gauge("pterodactyl_server_max_cpu_absolute", "Maximum cpu load allowed to server", label_names)
 
 
-
 def init_metrics():
     start_http_server(9531)
 

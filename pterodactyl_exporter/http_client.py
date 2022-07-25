@@ -1,5 +1,6 @@
 import http.client
 import json
+import time
 
 client = None
 headers = None
@@ -49,7 +50,11 @@ def get_server():
 def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
-        metrics = json.loads(client.getresponse().read())["attributes"]['resources']
+        response = json.loads(client.getresponse().read())
+        if "status" in response:
+            time.sleep(10)
+            get_metrics()
+        metrics = response["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"]/1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
         srv["disk"].append(metrics["disk_bytes"]/1000000)
