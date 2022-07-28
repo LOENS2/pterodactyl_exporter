@@ -51,7 +51,8 @@ def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         response = json.loads(client.getresponse().read())
-        if "status" in response:
+        print(response)
+        if "errors" in response:
             time.sleep(10)
             get_metrics()
         metrics = response["attributes"]['resources']
