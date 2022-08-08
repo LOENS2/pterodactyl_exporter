@@ -37,6 +37,9 @@ def get_server():
     }
     client.request("GET", "/api/client/", "", headers)
     servers = json.loads(client.getresponse().read())
+    if "errors" in servers:
+        time.sleep(10)
+        get_server()
     for x in servers['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])
