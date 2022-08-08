@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-As long as the project is still WIP, the dev version on tesp.pypi.org is supported
+As long as the project is still WIP, the dev version on test.pypi.org is supported
 
 | Version     | Supported          |
 | ----------- | ------------------ |
