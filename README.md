@@ -1,6 +1,6 @@
 # Pterodactyl Exporter
 
-### Please use the Discussion for Support Question rather than the Issues.
+### Please use the Discussion for Support rather than the Issues.
 
 A python script that exports performance metrics from Pterodactyl Panel 1.x via the Client API, converts the data to the correct format and provides a prometheus target.
 
