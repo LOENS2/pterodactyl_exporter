@@ -12,7 +12,7 @@ Feel free to try this script and submit an issue if needed.
 
 #### What you need:
 
- * Linux server
+ * Linux server (should run on Windows aswell, but is only tested in a linux environment)
  * Prometheus
  * Python (3.10)
  * Pterodactyl client API key (service account with read only is recommended)
