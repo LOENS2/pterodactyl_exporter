@@ -65,6 +65,16 @@ WantedBy=multi-user.target
  
  #### To show and hide servers from being monitored, just remove the read permission of the service account on that Server
 
+## Troubleshooting
+
+You can view the output with (Time is UTC):
+
+```
+sudo journalctl -u pterodacyl_exporter.service -b --since "2024-12-14 13:45:27"
+```
+
+Post any stacktraces as an Issue.
+
 ##
 
 &copy; LOENS2 2022
