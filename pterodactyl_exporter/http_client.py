@@ -38,6 +38,7 @@ def get_server():
     client.request("GET", "/api/client/", "", headers)
     servers = json.loads(client.getresponse().read())
     if "errors" in servers:
+        print(servers)
         time.sleep(10)
         get_server()
     for x in servers['data']:
@@ -54,8 +55,8 @@ def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         response = json.loads(client.getresponse().read())
-        print(response)
         if "errors" in response:
+            print(response)
             time.sleep(10)
             get_metrics()
         metrics = response["attributes"]['resources']
