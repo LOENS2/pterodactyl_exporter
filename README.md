@@ -19,9 +19,9 @@ Feel free to try this script and submit an issue if needed.
 
 #### Installed as user "prometheus":
 
- - To install a dev build use pip (a release and non-dev version will follow soon):
+ - To install with pip:
 ```
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pterodactyl-exporter
+pip install pterodactyl-exporter==0.1.0
 ```
  - Create directory `pterodactyl_exporter`.
  
@@ -61,7 +61,7 @@ WantedBy=multi-user.target
 
  ```
 
- - To get the Grafana dashboard, import id `16575`. Alternatively download the JSON file from the releases (coming soon).
+ - To get the Grafana dashboard, import id `16575`. Alternatively download the JSON file from the releases.
  
  #### To show and hide servers from being monitored, just remove the read permission of the service account on that Server
 
