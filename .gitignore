@@ -3,3 +3,4 @@
 /build/
 /pterodactyl_exporter.egg-info/
 /secret_config.yml
+/secret_config2.yml

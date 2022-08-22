@@ -1,3 +1,4 @@
 host: 
 api_key: 
 https: true
+ignore_ssl: false
