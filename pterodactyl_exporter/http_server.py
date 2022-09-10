@@ -1,4 +1,4 @@
-from prometheus_client import Gauge, start_http_server
+from prometheus_client import Gauge, Counter, start_http_server
 
 
 label_names = ("server_name", "id",)
@@ -6,9 +6,9 @@ label_names = ("server_name", "id",)
 memory = Gauge("pterodacytl_server_memory_megabytes", "Memory used by server in megabytes", label_names)
 cpu = Gauge("pterodactyl_server_cpu_absolute", "Absolute cpu usage by server", label_names)
 disk = Gauge("pterodactyl_server_disk_megabytes", "Disk space used by server in megabytes", label_names)
-rx = Gauge("pterodactyl_server_network_rx_megabytes", "Megabytes received by server via network", label_names)
-tx = Gauge("pterodactyl_server_network_tx_megabytes", "Megabytes transmitted by server via network", label_names)
-uptime = Gauge("pterodactyl_server_uptime_milliseconds", "Server uptime in milliseconds", label_names)
+rx = Counter("pterodactyl_server_network_rx_megabytes", "Megabytes received by server via network", label_names)
+tx = Counter("pterodactyl_server_network_tx_megabytes", "Megabytes transmitted by server via network", label_names)
+uptime = Counter("pterodactyl_server_uptime_milliseconds", "Server uptime in milliseconds", label_names)
 max_memory = Gauge("pterodactyl_server_max_memory_megabytes", "Maximum memory allocated to server in megabytes", label_names)
 max_swap = Gauge("pterodactyl_server_max_swap_megabytes", "Maximum swap allocated to server in megabytes", label_names)
 max_disk = Gauge("pterodactyl_server_max_disk_megabytes", "Maximum disk space allocated to server in megabytes", label_names)
