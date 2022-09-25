@@ -1,8 +1,7 @@
 version: "3"
 services:
   pterodactyl-exporter:
-    # TODO: Change image name once it is released on Docker Hub
-    image: LOENS2/pterodactyl-exporter:latest
+    image: LOENS2/pterodactyl_exporter:latest
     container_name: pterodactyl-exporter
     ports:
       - "9531:9531"
