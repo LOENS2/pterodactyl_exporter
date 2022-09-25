@@ -64,6 +64,25 @@ WantedBy=multi-user.target
  - To get the Grafana dashboard, import id `16575`. Alternatively download the JSON file from the releases.
  
  #### To show and hide servers from being monitored, just remove the read permission of the service account on that Server
+ 
+## Run with Docker
+
+ - Create a folder named `pterodactyl_exporter`
+ 
+ - Download the config file from GitHub:
+ ```
+ curl -fsSL -o config.yml https://raw.githubusercontent.com/LOENS2/pterodactyl_exporter/master/config.yml
+ ```
+ - Create a folder named `docker`
+ 
+ - Download the `docker-compose.yml` into that folder:
+ ```
+ curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/LOENS2/pterodactyl_exporter/master/docker/docker-compose.yml
+ ```
+ - Run the container:
+ ```
+ docker-compose up -d
+ ```
 
 ## Troubleshooting
 
@@ -76,5 +95,7 @@ sudo journalctl -u pterodacyl_exporter.service -b --since "2024-12-14 13:45:27"
 Post any stacktraces as an Issue.
 
 ##
+
+With special thanks to @grimsi for helping me with docker.
 
 &copy; LOENS2 2022
