@@ -94,7 +94,7 @@ WantedBy=multi-user.target
 ```
 git clone https://github.com/LOENS2/pterodactyl_exporter.git
 ```
- - Change to the clone directory
+ - Change to the cloned directory
  - Run with python:
 ```
 python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.yml
