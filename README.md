@@ -21,7 +21,7 @@ Feel free to try this script and submit an issue if needed.
 
  - To install with pip:
 ```
-pip install pterodactyl-exporter==0.1.0
+pip install pterodactyl-exporter
 ```
  - Create directory `pterodactyl_exporter`.
  
