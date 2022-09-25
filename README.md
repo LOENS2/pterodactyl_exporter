@@ -8,7 +8,7 @@ This can be used for time series monitoring of Pterodactyl game servers and visu
 
 Feel free to try this script and submit an issue if needed.
 
-## How to install
+# How to install
 
 #### What you need:
 
@@ -16,6 +16,8 @@ Feel free to try this script and submit an issue if needed.
  * Prometheus
  * Python (3.10)
  * Pterodactyl client API key (service account with read only is recommended)
+
+## Run as service
 
 #### Installed as user "prometheus":
 
@@ -83,8 +85,22 @@ WantedBy=multi-user.target
  ```
  docker-compose up -d
  ```
+ 
+## Run manually
 
-## Troubleshooting
+#### Only meant for testing purposes, not recommended for production use!
+
+ - Clone the project:
+```
+git clone https://github.com/LOENS2/pterodactyl_exporter.git
+```
+ - Change to the clone directory
+ - Run with python:
+```
+python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.yml
+```
+
+# Troubleshooting
 
 You can view the output with (Time is UTC):
 
