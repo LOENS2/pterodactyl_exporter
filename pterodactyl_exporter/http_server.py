@@ -14,6 +14,7 @@ max_swap = Gauge("pterodactyl_server_max_swap_megabytes", "Maximum swap allocate
 max_disk = Gauge("pterodactyl_server_max_disk_megabytes", "Maximum disk space allocated to server in megabytes", label_names)
 io = Gauge("pterodactyl_server_io", "IO weight of server", label_names)
 max_cpu = Gauge("pterodactyl_server_max_cpu_absolute", "Maximum cpu load allowed to server", label_names)
+last_backup_time = Gauge("pterodactyl_server_most_recent_backup_time", "Timestamp of the most recent backup", label_names)
 
 
 def init_metrics():
@@ -35,3 +36,4 @@ def serve_metrics(metrics):
         max_disk.labels(srv_label, id_label).set(metrics["max_disk"][x])
         io.labels(srv_label, id_label).set(metrics["io"][x])
         max_cpu.labels(srv_label, id_label).set(metrics["max_cpu"][x])
+        last_backup_time.labels(srv_label, id_label).set(metrics["last_backup_time"][x])

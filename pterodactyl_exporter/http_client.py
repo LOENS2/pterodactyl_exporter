@@ -1,6 +1,7 @@
 import http.client
 import json
 import time
+import dateutil.parser
 
 client = None
 headers = None
@@ -33,7 +34,8 @@ def get_server():
         "max_swap" :[],
         "max_disk": [],
         "io": [],
-        "max_cpu": []
+        "max_cpu": [],
+        "last_backup_time": [],
     }
     client.request("GET", "/api/client/", "", headers)
     servers = json.loads(client.getresponse().read())
@@ -66,4 +68,29 @@ def get_metrics():
         srv["rx"].append(metrics["network_rx_bytes"]/1000000)
         srv["tx"].append(metrics["network_tx_bytes"]/1000000)
         srv["uptime"].append(metrics["uptime"])
+
+        get_last_backup_time(x, 1)
+
     return srv
+
+def get_last_backup_time(x, page):
+    client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
+    response = json.loads(client.getresponse().read())
+    if "errors" in response:
+        print(response)
+        time.sleep(10)
+        get_metrics()
+    total_pages = response['meta']['pagination']['total_pages']
+    if page < total_pages:
+        return get_last_backup_time(x, page + 1)
+
+    successful_backup_times = sorted([
+        dateutil.parser.isoparse(backup['attributes']['completed_at'])
+        for backup in response['data']
+        if backup["attributes"]["is_successful"]
+    ])
+
+    if successful_backup_times:
+        srv["last_backup_time"].append(successful_backup_times[-1].timestamp())
+    else:
+        srv["last_backup_time"].append(0)
