@@ -5,3 +5,4 @@
 /secret_config.yml
 /secret_config2.yml
 /venv/
+**/*/__pycache__
