@@ -19,7 +19,7 @@ def client_init(config_file: dict):
                "Accept": "Application/vnd.pterodactyl.v1+json"}
 
 
-def get_server():
+def get_server(list_type="owner"):
     global srv
     srv = {
         "name": [],
@@ -37,12 +37,12 @@ def get_server():
         "max_cpu": [],
         "last_backup_time": [],
     }
-    client.request("GET", "/api/client/", "", headers)
+    client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
     servers = json.loads(client.getresponse().read())
     if "errors" in servers:
         print(servers)
         time.sleep(10)
-        get_server()
+        get_server(list_type)
     for x in servers['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])

@@ -4,4 +4,4 @@ https: true
 ignore_ssl: false
 # Can be set to `admin-all` (return all servers), `owner` (only owned servers)
 # or "" (only accessible servers, shown in your servers list)
-server_list_type: admin-all
+server_list_type: owner
