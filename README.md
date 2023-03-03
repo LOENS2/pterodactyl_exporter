@@ -34,6 +34,7 @@ host: panel.example.com
 api_key: APIKEY_APIKEYAPIKEYAPIKEY
 https: true
 ignore_ssl: false
+server_list_type: owner
  ```
 
  - Create systemd service `/etc/systemd/system/pterodactyl_exporter.service`:
@@ -73,7 +74,7 @@ WantedBy=multi-user.target
  
  - Download the config file from GitHub:
  ```
- curl -fsSL -o config.yml https://raw.githubusercontent.com/LOENS2/pterodactyl_exporter/master/config.yml
+ curl -fsSL -o config.yml https://raw.githubusercontent.com/LOENS2/pterodactyl_exporter/master/config.example.yml
  ```
  - Create a folder named `docker`
  
@@ -97,7 +98,7 @@ git clone https://github.com/LOENS2/pterodactyl_exporter.git
  - Change to the cloned directory
  - Run with python:
 ```
-python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.yml
+python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.example.yml
 ```
 
 # Troubleshooting

@@ -6,3 +6,4 @@
 /secret_config2.yml
 /venv/
 **/*/__pycache__
+/config.yml
