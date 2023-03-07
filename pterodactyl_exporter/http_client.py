@@ -68,6 +68,11 @@ def get_metrics():
         srv["rx"].append(metrics["network_rx_bytes"]/1000000)
         srv["tx"].append(metrics["network_tx_bytes"]/1000000)
         srv["uptime"].append(metrics["uptime"])
+        if "online_players" in metrics:
+            srv["online_players"] = metrics["online_players"]
+        else:
+            srv["online_players"] = -1.0
+
 
         get_last_backup_time(x, 1)
 
