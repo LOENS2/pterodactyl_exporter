@@ -36,6 +36,7 @@ def get_server(list_type="owner"):
         "io": [],
         "max_cpu": [],
         "last_backup_time": [],
+        "online_players": [],
     }
     client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
     servers = json.loads(client.getresponse().read())
