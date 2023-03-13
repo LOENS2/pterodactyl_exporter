@@ -31,7 +31,7 @@ def get_server(list_type="owner"):
         "tx": [],
         "uptime": [],
         "max_memory": [],
-        "max_swap" :[],
+        "max_swap": [],
         "max_disk": [],
         "io": [],
         "max_cpu": [],
@@ -62,16 +62,17 @@ def get_metrics():
             time.sleep(10)
             get_metrics()
         metrics = response["attributes"]['resources']
-        srv["memory"].append(metrics["memory_bytes"]/1000000)
+        srv["memory"].append(metrics["memory_bytes"] / 1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
-        srv["disk"].append(metrics["disk_bytes"]/1000000)
-        srv["rx"].append(metrics["network_rx_bytes"]/1000000)
-        srv["tx"].append(metrics["network_tx_bytes"]/1000000)
+        srv["disk"].append(metrics["disk_bytes"] / 1000000)
+        srv["rx"].append(metrics["network_rx_bytes"] / 1000000)
+        srv["tx"].append(metrics["network_tx_bytes"] / 1000000)
         srv["uptime"].append(metrics["uptime"])
 
         get_last_backup_time(x, 1)
 
     return srv
+
 
 def get_last_backup_time(x, page):
     client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
