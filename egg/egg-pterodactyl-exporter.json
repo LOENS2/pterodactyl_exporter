@@ -1,0 +1,82 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2023-06-04T12:34:24+02:00",
+    "name": "Pterodactyl Exporter",
+    "author": "info@loens2.com",
+    "description": "The official Pterodactyl Egg for the Prometheus Exporter by LOENS2.",
+    "features": null,
+    "docker_images": {
+        "Python 3.11": "ghcr.io\/software-noob\/pterodactyl-images:python_3.11"
+    },
+    "file_denylist": [],
+    "startup": "cd .python; python -m pterodactyl_exporter.pterodactyl_exporter --config-file=..\/config.yml",
+    "config": {
+        "files": "{\r\n    \"config.yml\": {\r\n        \"parser\": \"yaml\",\r\n        \"find\": {\r\n            \"host\": \"{{server.build.env.HOSTNAME}}\",\r\n            \"port\": \"{{server.build.default.port}}\",\r\n            \"api_key\": \"{{server.build.env.API_KEY}}\",\r\n            \"https\": \"{{server.build.env.HTTPS}}\",\r\n            \"ignore_ssl\": \"{{server.build.env.IGNORE_SSL}}\",\r\n            \"server_list_type\": \"{{server.build.env.SERVER_LIST_TYPE}}\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"Init successful!\"\r\n}",
+        "logs": "{}",
+        "stop": "^C^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n# Python App Installation Script\r\n\r\napt update && apt upgrade -y\r\n\r\napt install -y curl\r\n\r\nmkdir -p \/mnt\/server\r\ncd \/mnt\/server\r\n\r\nexport HOME=\/mnt\/server\r\n\r\nif [ -d \"\/home\/container\/pterodactyl_exporter\/\" ]; then\r\n    echo \"Installation found! Updating.\"\r\n    pip install -U --target .python --upgrade pterodactyl_exporter\r\nelse\r\n    pip install -U --target .python pterodactyl_exporter\r\nfi\r\n\r\nif ! [ -f \"\/home\/container\/config.yml\" ]; then\r\n    curl -fsSL -o config.yml https:\/\/raw.githubusercontent.com\/LOENS2\/pterodactyl_exporter\/master\/config.example.yml\r\nfi\r\n\r\necho -e \"Install process complete!\"\r\nexit 0",
+            "container": "python:3.11-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Hostname",
+            "description": "The host name of the Pterodactyl Panel instance to be monitored",
+            "env_variable": "HOSTNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "API Key",
+            "description": "The client API key of your Panel instance",
+            "env_variable": "API_KEY",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": false,
+            "rules": "required|string|min:48|max:48",
+            "field_type": "text"
+        },
+        {
+            "name": "HTTPS",
+            "description": "Enable or disable the use of HTTPS.",
+            "env_variable": "HTTPS",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Ignore SSL",
+            "description": "Ignore the validity of the Panel's SSL cert. Not used if HTTPS is turned off.",
+            "env_variable": "IGNORE_SSL",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Server List Type",
+            "description": "Define the way how the server list is read.",
+            "env_variable": "SERVER_LIST_TYPE",
+            "default_value": "owner",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|max:10|in:owner,admin-all,",
+            "field_type": "text"
+        }
+    ]
+}
