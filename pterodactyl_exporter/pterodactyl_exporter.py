@@ -22,7 +22,9 @@ def main(args=None):
     config_file = parse_args()
     config = config_load.get_config(config_file)
     http_client.client_init(config)
-    http_server.init_metrics()
+    http_server.init_metrics(config)
+
+    print("Init successful!")
 
     while True:
         try:

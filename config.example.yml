@@ -1,4 +1,5 @@
-host: 
+host:
+port:
 api_key: 
 https: true
 ignore_ssl: false

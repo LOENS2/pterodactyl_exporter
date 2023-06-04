@@ -17,8 +17,8 @@ max_cpu = Gauge("pterodactyl_server_max_cpu_absolute", "Maximum cpu load allowed
 last_backup_time = Gauge("pterodactyl_server_most_recent_backup_time", "Timestamp of the most recent backup", label_names)
 
 
-def init_metrics():
-    start_http_server(9531)
+def init_metrics(config: dict):
+    start_http_server(config['port'])
 
 
 def serve_metrics(metrics):
