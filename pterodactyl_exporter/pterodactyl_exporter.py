@@ -7,7 +7,7 @@ from pterodactyl_exporter import config_load, http_client, http_server
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="environment file")
+    parser = argparse.ArgumentParser(description="config file")
     parser.add_argument("--config-file", default="config.yml")
     cfg_file = parser.parse_args().config_file
     if cfg_file is None:

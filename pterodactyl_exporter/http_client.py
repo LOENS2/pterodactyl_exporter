@@ -38,12 +38,13 @@ def get_server(list_type="owner"):
         "last_backup_time": [],
     }
     client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
-    servers = json.loads(client.getresponse().read())
-    if "errors" in servers:
-        print(servers)
+    servers = client.getresponse()
+    # if "errors" in servers:
+    if not servers.status == 200:
+        print(servers.read())
         time.sleep(10)
         get_server(list_type)
-    for x in servers['data']:
+    for x in json.loads(servers.read())['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])
         srv["max_memory"].append(x['attributes']['limits']['memory'])
@@ -56,12 +57,13 @@ def get_server(list_type="owner"):
 def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
-        response = json.loads(client.getresponse().read())
-        if "errors" in response:
-            print(response)
+        response = client.getresponse()
+        # if "errors" in response:
+        if not response.status == 200:
+            print(response.read())
             time.sleep(10)
             get_metrics()
-        metrics = response["attributes"]['resources']
+        metrics = json.loads(response.read())["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"] / 1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
         srv["disk"].append(metrics["disk_bytes"] / 1000000)

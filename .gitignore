@@ -1,9 +1,16 @@
-/.env
+#Pyton related stuff
 /dist/
 /build/
 /pterodactyl_exporter.egg-info/
-/secret_config.yml
-/secret_config2.yml
 /venv/
 **/*/__pycache__
+
+# Secret testing configs
+
 /config.yml
+/secret_config.yml
+/secret_config2.yml
+
+# IDE Metadata
+
+**.idea/**
