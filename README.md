@@ -17,6 +17,13 @@ Feel free to try this script and submit an issue if needed.
  * Python (3.10)
  * Pterodactyl client API key (service account with read only is recommended)
 
+## Run as Pterodactyl Server
+
+ - Download the Egg JSON from `egg/egg-pterodactyl-exporter.json` or the releases
+ - Import the Egg into the Nest of your choice
+ - Create the server from the egg and fill in the required config values
+ - Run the server
+
 ## Run as service
 
 #### Installed as user "prometheus":
@@ -115,4 +122,4 @@ Post any stacktraces as an Issue.
 
 With special thanks to @grimsi for helping me with docker.
 
-&copy; LOENS2 2022
+&copy; LOENS2 2023
