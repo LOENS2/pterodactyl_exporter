@@ -39,4 +39,8 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Script stopped!")
+        raise SystemExit
