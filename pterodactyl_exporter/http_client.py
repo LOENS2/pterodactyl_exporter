@@ -16,7 +16,7 @@ def client_init(config_file: dict):
     else:
         client = http.client.HTTPConnection(config_file['host'], 80)
     headers = {"Authorization": f"Bearer {config_file['api_key']}", "Content-Type": "application/json",
-               "Accept": "Application/vnd.pterodactyl.v1+json"}
+               "Accept": "application/json"}
 
 
 def get_server(list_type="owner"):
@@ -39,9 +39,8 @@ def get_server(list_type="owner"):
     }
     client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
     servers = client.getresponse()
-    # if "errors" in servers:
     if not servers.status == 200:
-        print(servers.read())
+        print(f"Servers: {servers.read()}")
         time.sleep(10)
         get_server(list_type)
     for x in json.loads(servers.read())['data']:
@@ -58,9 +57,8 @@ def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         response = client.getresponse()
-        # if "errors" in response:
         if not response.status == 200:
-            print(response.read())
+            print(f"Metrics: {response.read()}")
             time.sleep(10)
             get_metrics()
         metrics = json.loads(response.read())["attributes"]['resources']
@@ -78,18 +76,19 @@ def get_metrics():
 
 def get_last_backup_time(x, page):
     client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
-    response = json.loads(client.getresponse().read())
-    if "errors" in response:
-        print(response)
+    response = client.getresponse()
+    read_response = json.loads(response.read())
+    if not response.status == 200:
+        print(f"Last Backup: {read_response}")
         time.sleep(10)
         get_metrics()
-    total_pages = response['meta']['pagination']['total_pages']
+    total_pages = read_response['meta']['pagination']['total_pages']
     if page < total_pages:
         return get_last_backup_time(x, page + 1)
 
     successful_backup_times = sorted([
         dateutil.parser.isoparse(backup['attributes']['completed_at'])
-        for backup in response['data']
+        for backup in read_response['data']
         if backup["attributes"]["is_successful"]
     ])
 
