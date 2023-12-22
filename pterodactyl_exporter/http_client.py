@@ -40,9 +40,7 @@ def get_server(list_type="owner"):
     client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
     servers = client.getresponse()
     if not servers.status == 200:
-        print(f"Servers: {servers.read()}")
-        time.sleep(10)
-        get_server(list_type)
+        raise Exception(f"Servers: \n{servers.read().decode('utf-8')}")
     for x in json.loads(servers.read())['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])
@@ -57,11 +55,11 @@ def get_metrics():
     for x in srv["id"]:
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         response = client.getresponse()
-        if not response.status == 200:
-            print(f"Metrics: {response.read()}")
-            time.sleep(10)
-            get_metrics()
-        metrics = json.loads(response.read())["attributes"]['resources']
+        response_read = response.read()
+        response_dict = json.loads(response_read)
+        if not response.status == 200 or not response_read or "error" in response_dict:
+            raise Exception(f"Metrics: \n{response_read.decode('utf-8')}")
+        metrics = response_dict["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"] / 1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
         srv["disk"].append(metrics["disk_bytes"] / 1000000)
@@ -77,18 +75,16 @@ def get_metrics():
 def get_last_backup_time(x, page):
     client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
     response = client.getresponse()
-    read_response = json.loads(response.read())
+    response_read = json.loads(response.read())
     if not response.status == 200:
-        print(f"Last Backup: {read_response}")
-        time.sleep(10)
-        get_metrics()
-    total_pages = read_response['meta']['pagination']['total_pages']
+        raise Exception(f"Last Backup: \n{response_read.decode('utf-8')}")
+    total_pages = response_read['meta']['pagination']['total_pages']
     if page < total_pages:
         return get_last_backup_time(x, page + 1)
 
     successful_backup_times = sorted([
         dateutil.parser.isoparse(backup['attributes']['completed_at'])
-        for backup in read_response['data']
+        for backup in response_read['data']
         if backup["attributes"]["is_successful"]
     ])
 

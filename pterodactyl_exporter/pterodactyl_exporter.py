@@ -36,6 +36,11 @@ def main(args=None):
             print("API not responding!")
             time.sleep(10)
             continue
+        except Exception as e:
+            print("A error occured:")
+            print(e)
+            time.sleep(10)
+            continue
 
 
 if __name__ == '__main__':
