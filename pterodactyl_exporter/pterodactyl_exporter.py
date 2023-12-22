@@ -37,7 +37,7 @@ def main(args=None):
             time.sleep(10)
             continue
         except Exception as e:
-            print("A error occured:")
+            print("An error occured:")
             print(e)
             time.sleep(10)
             continue
