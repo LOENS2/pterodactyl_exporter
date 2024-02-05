@@ -3,7 +3,7 @@ from prometheus_client import Gauge, start_http_server
 
 label_names = ("server_name", "id",)
 
-memory = Gauge("pterodacytl_server_memory_megabytes", "Memory used by server in megabytes", label_names)
+memory = Gauge("pterodactyl_server_memory_megabytes", "Memory used by server in megabytes", label_names)
 cpu = Gauge("pterodactyl_server_cpu_absolute", "Absolute cpu usage by server", label_names)
 disk = Gauge("pterodactyl_server_disk_megabytes", "Disk space used by server in megabytes", label_names)
 rx = Gauge("pterodactyl_server_network_rx_megabytes", "Megabytes received by server via network", label_names)
