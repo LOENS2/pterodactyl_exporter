@@ -38,7 +38,7 @@ pip install pterodactyl-exporter
  
  ```yml
 host: panel.example.com
-port: 9531 (Standard port for the exporter)
+port: 9531 #Standard port for the exporter
 api_key: APIKEY_APIKEYAPIKEYAPIKEY
 https: true
 ignore_ssl: false
