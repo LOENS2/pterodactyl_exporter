@@ -61,7 +61,6 @@ def get_metrics():
         response_read = response.read()
         response_dict = json.loads(response_read)
         if not response.status == 200 or not response_read or "error" in response_dict:
-            print(srv["name"], idx)
             raise Exception(f"Fetch metrics for {srv["name"][idx]}: \n{response_read.decode('utf-8')}")
         metrics = response_dict["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"] / 1000000)
@@ -82,7 +81,6 @@ def get_last_backup_time(idx, x, page):
     response_read = response.read()
     response_dict = json.loads(response_read)
     if not response.status == 200:
-        print(srv["name"], idx)
         raise Exception(f"Fetch last backup for {srv["name"][idx]}: \n{response_read.decode('utf-8')}")
     total_pages = response_dict['meta']['pagination']['total_pages']
     if page < total_pages:
