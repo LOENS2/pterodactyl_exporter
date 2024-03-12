@@ -106,6 +106,13 @@ WantedBy=multi-user.target
 git clone https://github.com/LOENS2/pterodactyl_exporter.git
 ```
  - Change to the cloned directory
+```
+cd pterodactyl_exporter
+```
+ - Install dependencies:
+```
+python -m pip install -r requirements.txt
+```
  - Run with python:
 ```
 python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.example.yml
