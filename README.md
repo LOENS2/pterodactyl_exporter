@@ -10,12 +10,14 @@ Feel free to try this script and submit an issue if needed.
 
 # How to install
 
-#### What you need:
+## What you need:
 
  * Linux server (should run on Windows as well, but is only tested in a linux environment)
  * Prometheus
  * Python (3.10)
- * Pterodactyl client API key (service account with read only is recommended)
+ * Pterodactyl client API key 
+   * Service account with read only is recommended
+   * You only need to set `Backup->Read` as permission for the account to the server you want to monitor.
 
 ## Run as Pterodactyl Server
 
