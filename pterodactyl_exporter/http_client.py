@@ -55,13 +55,14 @@ def get_server(list_type="owner"):
 
 
 def get_metrics():
-    for x in srv["id"]:
+    for idx, x in enumerate(srv["id"]):
         client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
         response = client.getresponse()
         response_read = response.read()
         response_dict = json.loads(response_read)
         if not response.status == 200 or not response_read or "error" in response_dict:
-            raise Exception(f"Metrics for {x}: \n{response_read.decode('utf-8')}")
+            print(srv["name"], idx)
+            raise Exception(f"Fetch metrics for {srv["name"][idx]}: \n{response_read.decode('utf-8')}")
         metrics = response_dict["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"] / 1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
@@ -70,18 +71,19 @@ def get_metrics():
         srv["tx"].append(metrics["network_tx_bytes"] / 1000000)
         srv["uptime"].append(metrics["uptime"])
 
-        get_last_backup_time(x, 1)
+        get_last_backup_time(idx, x, 1)
 
     return srv
 
 
-def get_last_backup_time(x, page):
+def get_last_backup_time(idx, x, page):
     client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
     response = client.getresponse()
     response_read = response.read()
     response_dict = json.loads(response_read)
     if not response.status == 200:
-        raise Exception(f"Last Backup for {x}: \n{response_read.decode('utf-8')}")
+        print(srv["name"], idx)
+        raise Exception(f"Fetch last backup for {srv["name"][idx]}: \n{response_read.decode('utf-8')}")
     total_pages = response_dict['meta']['pagination']['total_pages']
     if page < total_pages:
         return get_last_backup_time(x, page + 1)
