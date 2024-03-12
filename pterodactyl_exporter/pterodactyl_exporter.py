@@ -32,14 +32,14 @@ def main(args=None):
             http_client.get_server(config["server_list_type"])
             metrics = http_client.get_metrics()
             http_server.serve_metrics(metrics)
-            print(f"Served metrics at: {datetime.datetime.now():%Y-%m-%d %H:%M:%S}")
+            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | Served metrics")
             time.sleep(10)
         except http.client.RemoteDisconnected:
-            print("API not responding!")
+            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | API not responding!")
             time.sleep(10)
             continue
         except Exception as e:
-            print("An error occured:")
+            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | An error occured:")
             print(e)
             time.sleep(10)
             continue
