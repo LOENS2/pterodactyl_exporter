@@ -61,7 +61,7 @@ def get_metrics():
         response_read = response.read()
         response_dict = json.loads(response_read)
         if not response.status == 200 or not response_read or "error" in response_dict:
-            raise Exception(f"Metrics: \n{response_read.decode('utf-8')}")
+            raise Exception(f"Metrics for {x}: \n{response_read.decode('utf-8')}")
         metrics = response_dict["attributes"]['resources']
         srv["memory"].append(metrics["memory_bytes"] / 1000000)
         srv["cpu"].append(metrics["cpu_absolute"])
