@@ -1,12 +1,12 @@
 import http.client
 import json
 import ssl
-import time
 import dateutil.parser
 
 client = None
 headers = None
 srv = None
+MiB_TO_MB = 1.074
 
 
 def client_init(config_file: dict):
@@ -47,9 +47,9 @@ def get_server(list_type="owner"):
     for x in json.loads(servers.read())['data']:
         srv["name"].append(x['attributes']['name'])
         srv["id"].append(x['attributes']['identifier'])
-        srv["max_memory"].append(x['attributes']['limits']['memory'])
-        srv["max_swap"].append(x['attributes']['limits']['swap'])
-        srv["max_disk"].append(x['attributes']['limits']['disk'])
+        srv["max_memory"].append(x['attributes']['limits']['memory'] * MiB_TO_MB)
+        srv["max_swap"].append(x['attributes']['limits']['swap'] * MiB_TO_MB)
+        srv["max_disk"].append(x['attributes']['limits']['disk'] * MiB_TO_MB)
         srv["io"].append(x['attributes']['limits']['io'])
         srv["max_cpu"].append(x['attributes']['limits']['cpu'])
 
@@ -78,16 +78,17 @@ def get_metrics():
 def get_last_backup_time(x, page):
     client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
     response = client.getresponse()
-    response_read = json.loads(response.read())
+    response_read = response.read()
+    response_dict = json.loads(response_read)
     if not response.status == 200:
-        raise Exception(f"Last Backup: \n{response_read.decode('utf-8')}")
-    total_pages = response_read['meta']['pagination']['total_pages']
+        raise Exception(f"Last Backup for {x}: \n{response_read.decode('utf-8')}")
+    total_pages = response_dict['meta']['pagination']['total_pages']
     if page < total_pages:
         return get_last_backup_time(x, page + 1)
 
     successful_backup_times = sorted([
         dateutil.parser.isoparse(backup['attributes']['completed_at'])
-        for backup in response_read['data']
+        for backup in response_dict['data']
         if backup["attributes"]["is_successful"]
     ])
 
