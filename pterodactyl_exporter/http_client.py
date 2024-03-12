@@ -6,7 +6,7 @@ import dateutil.parser
 client = None
 headers = None
 srv = None
-MiB_TO_MB = 1.074
+MiB_TO_MB = 1.048576
 
 
 def client_init(config_file: dict):
