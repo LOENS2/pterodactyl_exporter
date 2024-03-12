@@ -2,6 +2,7 @@ import argparse
 import http.client
 import time
 import sys
+import datetime
 
 from pterodactyl_exporter import config_load, http_client, http_server
 
@@ -31,6 +32,7 @@ def main(args=None):
             http_client.get_server(config["server_list_type"])
             metrics = http_client.get_metrics()
             http_server.serve_metrics(metrics)
+            print(f"Served metrics at: {datetime.datetime.now():%Y-%m-%d %H:%M:%S}")
             time.sleep(10)
         except http.client.RemoteDisconnected:
             print("API not responding!")
