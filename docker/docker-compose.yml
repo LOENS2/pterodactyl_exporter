@@ -6,4 +6,4 @@ services:
     ports:
       - "9531:9531"
     volumes:
-      - ../config.yml:/opt/pterodactyl_exporter/config/config.yml
+      - ../enum.yml:/opt/pterodactyl_exporter/enum/enum.yml

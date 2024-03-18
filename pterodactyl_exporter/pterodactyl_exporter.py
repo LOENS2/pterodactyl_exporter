@@ -1,46 +1,46 @@
 import argparse
 import http.client
 import time
-import sys
-import datetime
+from .console_logger import log_to_console
+from .config_load import get_config
+from .http_client import HTTPClient
+from .http_server import HTTPServer
 
-from pterodactyl_exporter import config_load, http_client, http_server
 
-
-def parse_args():
+def get_config_file_path():
     parser = argparse.ArgumentParser(description="config file")
     parser.add_argument("--config-file", default="config.yml")
-    cfg_file = parser.parse_args().config_file
-    if cfg_file is None:
-        print("No config provided!")
-        exit(1)
-    return cfg_file
+    return parser.parse_args().config_file
 
 
-def main(args=None):
-    if args is None:
-        args = sys.argv[1:]
-    config_file = parse_args()
-    config = config_load.get_config(config_file)
-    http_client.client_init(config)
-    http_server.init_metrics(config)
+def main():
+    config_path = get_config_file_path()
+    try:
+        config = get_config(config_path)
+    except FileNotFoundError:
+        log_to_console(f"Config file in path {config_path} not found, please provide one!", True, True)
+        raise SystemExit
+    except ValueError as e:
+        log_to_console("Config Error:", True, True, e)
+        raise SystemExit
 
-    print("Init successful!")
+    http_client = HTTPClient(config)
+    http_server = HTTPServer(config)
+
+    log_to_console("Init successful!")
 
     while True:
         try:
-            http_client.get_server(config["server_list_type"])
             metrics = http_client.get_metrics()
             http_server.serve_metrics(metrics)
-            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | Served metrics")
+            log_to_console("Serverd metrics")
             time.sleep(10)
         except http.client.RemoteDisconnected:
-            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | API not responding!")
+            log_to_console("API not responding!", True)
             time.sleep(10)
             continue
         except Exception as e:
-            print(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | An error occured:")
-            print(e)
+            log_to_console("An error occurred:", True, False, e)
             time.sleep(10)
             continue
 
@@ -49,5 +49,5 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("Script stopped!")
+        log_to_console("Keyboard Interrupt", False, True)
         raise SystemExit
