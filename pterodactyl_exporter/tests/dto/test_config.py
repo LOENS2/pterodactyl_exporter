@@ -1,5 +1,5 @@
 import unittest
-from ..dto.config import Config
+from pterodactyl_exporter.dto.config import Config
 
 
 class TestConfig(unittest.TestCase):
