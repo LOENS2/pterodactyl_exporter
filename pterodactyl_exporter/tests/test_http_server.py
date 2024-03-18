@@ -4,6 +4,7 @@ from pterodactyl_exporter.http_server import HTTPServer
 from pterodactyl_exporter.dto.config import Config
 from pterodactyl_exporter.dto.metrics import Metrics
 
+
 class TestHTTPServer(unittest.TestCase):
     def test_serve_metrics(self):
         config = Config(
@@ -13,7 +14,8 @@ class TestHTTPServer(unittest.TestCase):
             https=True,
             ignore_ssl=False,
             server_list_type="owner"
-        )  # Port für den Test
+        )
+
         http_server = HTTPServer(config)
         http_server.metric_gauges = {
             "memory": MagicMock(),

@@ -10,7 +10,6 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             Config.validate_port(70000, field=None)
 
-        # Non-integer port should raise ValueError
         with self.assertRaises(ValueError):
             Config.validate_port('abc', field=None)
 
