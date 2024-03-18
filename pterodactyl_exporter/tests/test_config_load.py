@@ -15,7 +15,7 @@ class TestGetConfig(unittest.TestCase):
 
         # Check if the Config object is created correctly
         self.assertEqual(config.host, "example.com")
-        self.assertEqual(config.port, 8080)
+        self.assertEqual(config.port, 9531)
         self.assertEqual(config.api_key, "test123")
         self.assertEqual(config.https, True)
         self.assertEqual(config.ignore_ssl, False)

@@ -6,7 +6,14 @@ from pterodactyl_exporter.dto.metrics import Metrics
 
 class TestHTTPServer(unittest.TestCase):
     def test_serve_metrics(self):
-        config = Config(port=8000, host="example.com", api_key="test123", https=True, ignore_ssl=False, server_list_type="owner")  # Port für den Test
+        config = Config(
+            port=9531,
+            host="example.com",
+            api_key="test123",
+            https=True,
+            ignore_ssl=False,
+            server_list_type="owner"
+        )  # Port für den Test
         http_server = HTTPServer(config)
         http_server.metric_gauges = {
             "memory": MagicMock(),
