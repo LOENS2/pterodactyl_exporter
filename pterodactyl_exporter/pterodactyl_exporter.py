@@ -1,10 +1,21 @@
 import argparse
 import http.client
 import time
-from .console_logger import log_to_console
+import datetime
 from .config_load import get_config
 from .http_client import HTTPClient
 from .http_server import HTTPServer
+
+
+def log_to_console(msg: str, is_error: bool = False, is_terminating: bool = False, e: Exception = None):
+    color = ""
+    if is_error:
+        color = "\033[31m"
+    print(f"{color}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} | {msg}\033[0m")
+    if is_error and e is not None:
+        print(f"{color}\t{e.__str__()}\033[0m")
+    if is_terminating:
+        print("\033[0mScript stopped!")
 
 
 def get_config_file_path():
