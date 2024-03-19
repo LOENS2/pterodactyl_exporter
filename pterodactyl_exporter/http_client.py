@@ -1,4 +1,5 @@
 import requests
+import time
 import dateutil.parser
 from .dto.config import Config
 from .dto.metrics import Metrics
@@ -7,7 +8,7 @@ from .dto.metrics import Metrics
 class HTTPClient:
     def __init__(self, config: Config):
         self.config = config
-        self.metrics = Metrics()
+        self.metrics: Metrics = Metrics()
         self.headers = {
             "Authorization": f"Bearer {config.api_key}",
             "Content-Type": "application/json",
@@ -15,6 +16,8 @@ class HTTPClient:
         }
 
     def get_metrics(self):
+        self.metrics = Metrics()
+        t1 = time.time()
         servers = self.fetch_server()
         for server_data in servers.get('data', []):
             self.process_servers(server_data)
@@ -23,6 +26,8 @@ class HTTPClient:
             resources = self.fetch_resources(server_id, index)
             self.process_resources(resources)
             self.fetch_last_backup_time(server_id, index)
+        t2 = time.time()
+        print(f"total= {t2 - t1}")
         return self.metrics
 
     def fetch_server(self):
@@ -30,6 +35,7 @@ class HTTPClient:
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
         if response.status_code != 200:
             raise Exception(f"Error fetching servers: {response.text}")
+        response.close()
         return response.json()
 
     def process_servers(self, server_data):
@@ -48,6 +54,7 @@ class HTTPClient:
         if response.status_code != 200:
             raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
         response_data = response.json()
+        response.close()
         return response_data["attributes"]["resources"]
 
     def process_resources(self, resources):
@@ -64,6 +71,7 @@ class HTTPClient:
         if response.status_code != 200:
             raise Exception(f"Fetch last backup for {self.metrics.name[index]}")
         response_data = response.json()
+        response.close()
         backups = response_data["data"]
         last_successful_backup = max(
             dateutil.parser.isoparse(backup["attributes"]["completed_at"]).timestamp()
