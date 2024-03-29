@@ -8,7 +8,7 @@ class Config(Validation):
     host: str
     port: int
     api_key: str
-    https: bool|int
+    https: bool
     ignore_ssl: bool
     server_list_type: ServerListType
 
