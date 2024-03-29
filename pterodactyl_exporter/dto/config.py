@@ -8,7 +8,7 @@ class Config(Validation):
     host: str
     port: int
     api_key: str
-    https: bool
+    https: bool|int
     ignore_ssl: bool
     server_list_type: ServerListType
 
@@ -27,12 +27,16 @@ class Config(Validation):
 
     @staticmethod
     def validate_https(value, **_) -> bool:
+        if True is isinstance(value, int):
+            return bool(value)
         if False is isinstance(value, bool):
             raise ValueError("https: Please use a boolean value")
         return value
 
     @staticmethod
     def validate_ignore_ssl(value, **_) -> bool:
+        if True is isinstance(value, int):
+            return bool(value)
         if False is isinstance(value, bool):
             raise ValueError("ignore_ssl: Please use a boolean value")
         return value

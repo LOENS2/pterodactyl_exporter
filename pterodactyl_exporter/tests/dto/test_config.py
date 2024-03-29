@@ -26,6 +26,11 @@ class TestConfig(unittest.TestCase):
 
     def test_validate_https_valid(self):
         self.assertEqual(Config.validate_https(True, field=None), True)
+        self.assertEqual(Config.validate_https(False, field=None), False)
+        self.assertEqual(Config.validate_https(0, field=None), False)
+        self.assertEqual(Config.validate_https(1, field=None), True)
+        self.assertEqual(Config.validate_https(10, field=None), True)
+        self.assertEqual(Config.validate_https(-10, field=None), True)
 
     def test_validate_https_invalid(self):
         with self.assertRaises(ValueError):
