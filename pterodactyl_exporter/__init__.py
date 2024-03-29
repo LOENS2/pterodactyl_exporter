@@ -1,3 +1,3 @@
-__version__ = "0.1.6"
+__version__ = "1.0.0"
 __author__ = 'LOENS2'
-__license__ = 'MIT'
+__license__ = 'GPL-3'
