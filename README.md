@@ -10,12 +10,14 @@ Feel free to try this script and submit an issue if needed.
 
 # How to install
 
-#### What you need:
+## What you need:
 
  * Linux server (should run on Windows as well, but is only tested in a linux environment)
  * Prometheus
  * Python (3.10)
- * Pterodactyl client API key (service account with read only is recommended)
+ * Pterodactyl client API key 
+   * Service account with read only is recommended
+   * You only need to set `Backup->Read` as permission for the account to the server you want to monitor.
 
 ## Run as Pterodactyl Server
 
@@ -104,6 +106,13 @@ WantedBy=multi-user.target
 git clone https://github.com/LOENS2/pterodactyl_exporter.git
 ```
  - Change to the cloned directory
+```
+cd pterodactyl_exporter
+```
+ - Install dependencies:
+```
+python -m pip install -r requirements.txt
+```
  - Run with python:
 ```
 python -m pterodactyl_exporter.pterodactyl_exporter --config-file=config.example.yml

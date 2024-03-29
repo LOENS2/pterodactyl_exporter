@@ -1,97 +1,90 @@
-import http.client
-import json
-import ssl
+import requests
 import time
 import dateutil.parser
-
-client = None
-headers = None
-srv = None
+from .dto.config import Config
+from .dto.metrics import Metrics
 
 
-def client_init(config_file: dict):
-    global client
-    global headers
-    if config_file['https']:
-        context = ssl.create_default_context()
-        context.check_hostname = not config_file['ignore_ssl']
-        client = http.client.HTTPSConnection(config_file['host'], 443, context=context)
-    else:
-        client = http.client.HTTPConnection(config_file['host'], 80)
-    headers = {"Authorization": f"Bearer {config_file['api_key']}", "Content-Type": "application/json",
-               "Accept": "application/json"}
+class HTTPClient:
+    def __init__(self, config: Config):
+        self.config = config
+        self.metrics: Metrics = Metrics()
+        self.headers = {
+            "Authorization": f"Bearer {config.api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
+    def get_metrics(self):
+        self.metrics = Metrics()
+        t1 = time.time()
+        servers = self.fetch_server()
+        for server_data in servers.get('data', []):
+            self.process_servers(server_data)
 
-def get_server(list_type="owner"):
-    global srv
-    srv = {
-        "name": [],
-        "id": [],
-        "memory": [],
-        "cpu": [],
-        "disk": [],
-        "rx": [],
-        "tx": [],
-        "uptime": [],
-        "max_memory": [],
-        "max_swap": [],
-        "max_disk": [],
-        "io": [],
-        "max_cpu": [],
-        "last_backup_time": [],
-    }
-    client.request("GET", "/api/client/?type={}".format(list_type), "", headers)
-    servers = client.getresponse()
-    if not servers.status == 200:
-        raise Exception(f"Servers: \n{servers.read().decode('utf-8')}")
-    for x in json.loads(servers.read())['data']:
-        srv["name"].append(x['attributes']['name'])
-        srv["id"].append(x['attributes']['identifier'])
-        srv["max_memory"].append(x['attributes']['limits']['memory'])
-        srv["max_swap"].append(x['attributes']['limits']['swap'])
-        srv["max_disk"].append(x['attributes']['limits']['disk'])
-        srv["io"].append(x['attributes']['limits']['io'])
-        srv["max_cpu"].append(x['attributes']['limits']['cpu'])
+        for index, server_id in enumerate(self.metrics.id):
+            resources = self.fetch_resources(server_id, index)
+            self.process_resources(resources)
+            self.fetch_last_backup_time(server_id, index)
+        t2 = time.time()
+        print(f"total= {t2 - t1}")
+        return self.metrics
 
+    def fetch_server(self):
+        url = f"{self.get_url()}/api/client/?type={self.config.server_list_type}"
+        response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
+        if response.status_code != 200:
+            raise Exception(f"Error fetching servers: {response.text}")
+        response.close()
+        return response.json()
 
-def get_metrics():
-    for x in srv["id"]:
-        client.request("GET", f"/api/client/servers/{x}/resources", "", headers)
-        response = client.getresponse()
-        response_read = response.read()
-        response_dict = json.loads(response_read)
-        if not response.status == 200 or not response_read or "error" in response_dict:
-            raise Exception(f"Metrics: \n{response_read.decode('utf-8')}")
-        metrics = response_dict["attributes"]['resources']
-        srv["memory"].append(metrics["memory_bytes"] / 1000000)
-        srv["cpu"].append(metrics["cpu_absolute"])
-        srv["disk"].append(metrics["disk_bytes"] / 1000000)
-        srv["rx"].append(metrics["network_rx_bytes"] / 1000000)
-        srv["tx"].append(metrics["network_tx_bytes"] / 1000000)
-        srv["uptime"].append(metrics["uptime"])
+    def process_servers(self, server_data):
+        attributes = server_data.get('attributes', {})
+        self.metrics.name.append(attributes.get('name', ''))
+        self.metrics.id.append(attributes.get('identifier', ''))
+        self.metrics.max_memory.append(attributes['limits']['memory'])
+        self.metrics.max_swap.append(attributes['limits']['swap'])
+        self.metrics.max_disk.append(attributes['limits']['disk'])
+        self.metrics.io.append(attributes['limits']['io'])
+        self.metrics.max_cpu.append(attributes['limits']['cpu'])
 
-        get_last_backup_time(x, 1)
+    def fetch_resources(self, server_id, index):
+        url = f"{self.get_url()}/api/client/servers/{server_id}/resources"
+        response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
+        if response.status_code != 200:
+            raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
+        response_data = response.json()
+        response.close()
+        return response_data["attributes"]["resources"]
 
-    return srv
+    def process_resources(self, resources):
+        self.metrics.memory.append(self.convert_byte_to_mebibyte(resources["memory_bytes"]))
+        self.metrics.cpu.append(resources["cpu_absolute"])
+        self.metrics.disk.append(self.convert_byte_to_mebibyte(resources["disk_bytes"]))
+        self.metrics.rx.append(self.convert_byte_to_mebibyte(resources["network_rx_bytes"]))
+        self.metrics.tx.append(self.convert_byte_to_mebibyte(resources["network_tx_bytes"]))
+        self.metrics.uptime.append(resources["uptime"])
 
+    def fetch_last_backup_time(self, server_id, index):
+        url = f"{self.get_url()}/api/client/servers/{server_id}/backups?per_page=50"
+        response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
+        if response.status_code != 200:
+            raise Exception(f"Fetch last backup for {self.metrics.name[index]}")
+        response_data = response.json()
+        response.close()
+        backups = response_data["data"]
+        last_successful_backup = max(
+            dateutil.parser.isoparse(backup["attributes"]["completed_at"]).timestamp()
+            for backup in backups
+            if backup["attributes"]["is_successful"]
+        ) if backups else 0
+        self.metrics.last_backup_time.append(last_successful_backup)
 
-def get_last_backup_time(x, page):
-    client.request("GET", f"/api/client/servers/{x}/backups?per_page=50&page={page}", "", headers)
-    response = client.getresponse()
-    response_read = json.loads(response.read())
-    if not response.status == 200:
-        raise Exception(f"Last Backup: \n{response_read.decode('utf-8')}")
-    total_pages = response_read['meta']['pagination']['total_pages']
-    if page < total_pages:
-        return get_last_backup_time(x, page + 1)
+    def get_url(self):
+        if self.config.https:
+            return f"https://{self.config.host}:443"
+        return f"http://{self.config.host}:80"
 
-    successful_backup_times = sorted([
-        dateutil.parser.isoparse(backup['attributes']['completed_at'])
-        for backup in response_read['data']
-        if backup["attributes"]["is_successful"]
-    ])
-
-    if successful_backup_times:
-        srv["last_backup_time"].append(successful_backup_times[-1].timestamp())
-    else:
-        srv["last_backup_time"].append(0)
+    @staticmethod
+    def convert_byte_to_mebibyte(byte):
+        return byte / 1048576
