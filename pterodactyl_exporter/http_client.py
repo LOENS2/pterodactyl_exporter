@@ -19,13 +19,15 @@ class HTTPClient:
         self.metrics = Metrics()
         t1 = time.time()
         servers = self.fetch_server()
+        pages = servers['meta']['pagination']['total_pages']
         for server_data in servers.get('data', []):
             self.process_servers(server_data)
 
-        for index, server_id in enumerate(self.metrics.id):
-            resources = self.fetch_resources(server_id, index)
-            self.process_resources(resources)
-            self.fetch_last_backup_time(server_id, index)
+        for page in range(pages):
+            for index, server_id in enumerate(self.metrics.id):
+                resources = self.fetch_resources(server_id, index, page + 1)
+                self.process_resources(resources)
+                self.fetch_last_backup_time(server_id, index, page + 1)
         t2 = time.time()
         print(f"total= {t2 - t1}")
         return self.metrics
@@ -48,8 +50,8 @@ class HTTPClient:
         self.metrics.io.append(attributes['limits']['io'])
         self.metrics.max_cpu.append(attributes['limits']['cpu'])
 
-    def fetch_resources(self, server_id, index):
-        url = f"{self.get_url()}/api/client/servers/{server_id}/resources"
+    def fetch_resources(self, server_id, index, page):
+        url = f"{self.get_url()}/api/client/servers/{server_id}/resources?page={page}"
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
         if response.status_code != 200:
             raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
@@ -65,8 +67,8 @@ class HTTPClient:
         self.metrics.tx.append(self.convert_byte_to_mebibyte(resources["network_tx_bytes"]))
         self.metrics.uptime.append(resources["uptime"])
 
-    def fetch_last_backup_time(self, server_id, index):
-        url = f"{self.get_url()}/api/client/servers/{server_id}/backups?per_page=50"
+    def fetch_last_backup_time(self, server_id, index, page):
+        url = f"{self.get_url()}/api/client/servers/{server_id}/backups?per_page=50&page={page}"
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
         if response.status_code != 200:
             raise Exception(f"Fetch last backup for {self.metrics.name[index]}")
