@@ -21,7 +21,9 @@ class HTTPClient:
         servers = self.fetch_server()
         pages = servers['meta']['pagination']['total_pages']
         for server_data in servers.get('data', []):
-            self.process_servers(server_data)
+            if not (bool(server_data['attributes']['is_suspended']) or
+                    bool(server_data['attributes']['is_installing'])):
+                self.process_servers(server_data)
 
         for page in range(pages):
             for index, server_id in enumerate(self.metrics.id):
