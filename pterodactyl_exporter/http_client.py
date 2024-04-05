@@ -20,22 +20,25 @@ class HTTPClient:
         t1 = time.time()
         servers = self.fetch_server()
         pages = servers['meta']['pagination']['total_pages']
-        for server_data in servers.get('data', []):
-            if not (bool(server_data['attributes']['is_suspended']) or
-                    bool(server_data['attributes']['is_installing'])):
-                self.process_servers(server_data)
 
-        for page in range(pages):
+        for page in range(1, pages + 1):
+            servers = self.fetch_server(page)
+            for server_data in servers.get('data', []):
+                if not (bool(server_data['attributes']['is_suspended']) or
+                        bool(server_data['attributes']['is_installing'])):
+                    self.process_servers(server_data)
+
+        for page in range(1, pages + 1):
             for index, server_id in enumerate(self.metrics.id):
-                resources = self.fetch_resources(server_id, index, page + 1)
+                resources = self.fetch_resources(server_id, index,)
                 self.process_resources(resources)
-                self.fetch_last_backup_time(server_id, index, page + 1)
+                self.fetch_last_backup_time(server_id, index,)
         t2 = time.time()
         print(f"total= {t2 - t1}")
         return self.metrics
 
-    def fetch_server(self):
-        url = f"{self.get_url()}/api/client/?type={self.config.server_list_type}"
+    def fetch_server(self, page=1):
+        url = f"{self.get_url()}/api/client/?type={self.config.server_list_type}&page={page}"
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
         if response.status_code != 200:
             raise Exception(f"Error fetching servers: {response.text}")
