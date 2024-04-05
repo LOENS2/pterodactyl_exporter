@@ -30,9 +30,9 @@ class HTTPClient:
 
         for page in range(1, pages + 1):
             for index, server_id in enumerate(self.metrics.id):
-                resources = self.fetch_resources(server_id, index,)
+                resources = self.fetch_resources(server_id, index, page)
                 self.process_resources(resources)
-                self.fetch_last_backup_time(server_id, index,)
+                self.fetch_last_backup_time(server_id, index, page)
         t2 = time.time()
         print(f"total= {t2 - t1}")
         return self.metrics
