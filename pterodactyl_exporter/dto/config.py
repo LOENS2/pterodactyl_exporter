@@ -21,8 +21,8 @@ class Config(Validation):
 
     @staticmethod
     def validate_port(value, **_) -> int:
-        if False is isinstance(value, int) or False is (1025 <= value <= 65535):
-            raise ValueError("port: Please use a port between 1025 and 65535")
+        if False is isinstance(value, int) or False is (1 <= value <= 65535):
+            raise ValueError("port: Please use a port between 1 and 65535")
         return value
 
     @staticmethod
