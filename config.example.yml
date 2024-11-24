@@ -1,4 +1,5 @@
 host:
+host_port: # This is the port of the panel (optional)
 port: 9531 # This is tge standard port for the exporter
 api_key: 
 https: true
