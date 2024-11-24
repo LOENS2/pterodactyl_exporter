@@ -89,8 +89,8 @@ class HTTPClient:
 
     def get_url(self):
         if self.config.https:
-            return f"https://{self.config.host}:443"
-        return f"http://{self.config.host}:80"
+            return f"https://{self.config.host}:{self.config.host_port if self.config.host_port else 443}"
+        return f"http://{self.config.host}:{self.config.host_port if self.config.host_port else 80}"
 
     @staticmethod
     def convert_byte_to_mebibyte(byte):
