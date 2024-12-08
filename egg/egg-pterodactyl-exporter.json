@@ -10,7 +10,7 @@
     "description": "The official Pterodactyl Egg for the Prometheus Exporter by LOENS2.",
     "features": null,
     "docker_images": {
-        "Python 3.11": "ghcr.io\/software-noob\/pterodactyl-images:python_3.11"
+        "Python 3.11": "ghcr.io\/parkervcp\/yolks:python_3.11"
     },
     "file_denylist": [],
     "startup": "cd .python; python -m pterodactyl_exporter.pterodactyl_exporter --config-file=..\/config.yml",
