@@ -30,7 +30,12 @@ Feel free to try this script and submit an issue if needed.
 
 #### Installed as user "prometheus":
 
- - To install with pip:
+ - To install with pipx:
+```
+pipx install pterodactyl-exporter
+```
+
+ - To install with pip _(not recommended, could break system dependencies)_:
 ```
 pip install pterodactyl-exporter
 ```
