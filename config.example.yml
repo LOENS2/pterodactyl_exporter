@@ -7,3 +7,5 @@ ignore_ssl: false
 # Can be set to `admin-all` (return all servers), `owner` (only owned servers)
 # or "" (only accessible servers, shown in your servers list)
 server_list_type: owner
+query_interval: 10
+# Interval in seconds between each query to the Pterodactyl panel (default: 10)

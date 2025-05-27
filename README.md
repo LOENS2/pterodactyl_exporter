@@ -50,6 +50,7 @@ api_key: APIKEY_APIKEYAPIKEYAPIKEY
 https: true
 ignore_ssl: false
 server_list_type: owner
+query_interval: 10 # Interval in seconds between each query to the Pterodactyl panel (default: 10)
  ```
 
  - Create systemd service `/etc/systemd/system/pterodactyl_exporter.service`:

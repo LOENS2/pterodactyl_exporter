@@ -11,6 +11,7 @@ class Config(Validation):
     ignore_ssl: bool
     server_list_type: ServerListType
     host_port: int = field(default=None)  # Make host_port optional
+    query_interval: int = field(default=10)
 
     @staticmethod
     def validate_server_list_type(value, **_) -> str:
@@ -48,4 +49,12 @@ class Config(Validation):
             return bool(value)
         if False is isinstance(value, bool):
             raise ValueError("ignore_ssl: Please use a boolean value")
+        return value
+
+    @staticmethod
+    def validate_query_interval(value, **_) -> int:
+        if value is None:
+            return 10
+        if not isinstance(value, int) or value < 1:
+            raise ValueError("query_interval: Please use a positive integer (seconds)")
         return value
