@@ -51,7 +51,7 @@ publish_pypi:
   before_script:
     - source $VENV_PATH/bin/activate
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
+      if [[ -n "$CI_COMMIT_TAG" ]]; then
           export TWINE_PASSWORD="$PYPI_TOKEN"
           export TWINE_REPOSITORY_URL="https://upload.pypi.org/legacy/"
         elif [[ "$CI_COMMIT_BRANCH" == "dev" ]]; then
@@ -64,7 +64,7 @@ publish_pypi:
   script:
     - twine upload dist/*
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_TAG'
       when: always
     - if: '$CI_COMMIT_BRANCH == "dev"'
       when: always
@@ -77,8 +77,8 @@ docker_build_push:
   needs: ["build_package"]
   before_script:
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
-        export REGISTRY="$DOCKER_REGISTRY"
+      if [[ -n "$CI_COMMIT_TAG" ]]; then
+        export REGISTRY=""
         export REGISTRY_USER="$DOCKER_REGISTRY_USER"
         export REGISTRY_TOKEN="$DOCKER_REGISTRY_TOKEN"
         export IMAGE_TAG_LATEST="$DOCKER_REGISTRY:latest"
@@ -97,7 +97,7 @@ docker_build_push:
   script:
     - docker buildx build --push --tag $IMAGE_TAG_LATEST --tag $IMAGE_TAG_COMMIT -f docker/Dockerfile .
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_TAG'
       when: always
     - if: '$CI_COMMIT_BRANCH == "dev"'
       when: always
