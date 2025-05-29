@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=80.9.0", "setuptools-scm>=8.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pterodactyl_exporter"
+description = "Metrics exporter for Pterodactyl"
+authors = [
+    { name = "LOENS23", email = "info@loens2.com" }
+]
+license = "GPL-3.0"
+readme = "README.md"
+requires-python = ">=3.8"
+
+dynamic = ["version"]
+
+dependencies = [
+    "PyYAML~=6.0.1",
+    "setuptools~=80.9.0",
+    "python-dateutil~=2.9.0.post0",
+    "prometheus_client~=0.22.0",
+    "dataclasses_json~=0.6.4",
+    "requests~=2.31"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/LOENS2/pterodactyl_exporter"
+
+[project.scripts]
+pterodactyl_exporter = "pterodactyl_exporter.pterodactyl_exporter:main"
+
+[tool.setuptools]
+packages = ["pterodactyl_exporter"]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra"
+testpaths = [
+    "pterodactyl_exporter/tests"
+]

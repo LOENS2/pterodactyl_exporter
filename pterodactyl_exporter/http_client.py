@@ -19,6 +19,7 @@ class HTTPClient:
         self.metrics = Metrics()
         t1 = time.time()
         servers = self.fetch_server()
+        server_pages = {}
         pages = servers['meta']['pagination']['total_pages']
 
         for page in range(1, pages + 1):
@@ -27,12 +28,15 @@ class HTTPClient:
                 if not (bool(server_data['attributes']['is_suspended']) or
                         bool(server_data['attributes']['is_installing'])):
                     self.process_servers(server_data)
+                    server_id = server_data['attributes']['identifier']
+                    server_pages[server_id] = page
 
-        for page in range(1, pages + 1):
-            for index, server_id in enumerate(self.metrics.id):
-                resources = self.fetch_resources(server_id, index, page)
-                self.process_resources(resources)
-                self.fetch_last_backup_time(server_id, index, page)
+        for index, server_id in enumerate(self.metrics.id):
+            page = server_pages[server_id]
+            resources = self.fetch_resources(server_id, index, page)
+            self.process_resources(resources)
+            self.fetch_last_backup_time(server_id, index, page)
+
         t2 = time.time()
         print(f"total= {t2 - t1}")
         return self.metrics

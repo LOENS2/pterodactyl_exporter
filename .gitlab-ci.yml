@@ -1,0 +1,104 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  VENV_PATH: ".venv"
+
+cache:
+  paths:
+    - .venv/
+
+before_script:
+  - python3 -m venv $VENV_PATH
+  - source $VENV_PATH/bin/activate
+  - pip install -U pip build twine
+
+test:
+  tags:
+    - shell
+  stage: test
+  script:
+    - pip install .[test]
+    - pytest --junitxml=reports/rspec.xml
+  artifacts:
+    when: always
+    paths:
+      - reports/rspec.xml
+    reports:
+      junit: reports/rspec.xml
+
+build_package:
+  tags:
+    - shell
+  stage: build
+  script:
+    - rm -rf dist/
+    - python -m build
+  artifacts:
+    paths:
+      - dist/*.tar.gz
+      - dist/*.whl
+
+publish_pypi:
+  tags:
+    - shell
+  stage: deploy
+  needs: ["build_package"]
+  variables:
+    TWINE_USERNAME: "__token__"
+  before_script:
+    - source $VENV_PATH/bin/activate
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
+          export TWINE_PASSWORD="$PYPI_TOKEN"
+          export TWINE_REPOSITORY_URL="https://upload.pypi.org/legacy/"
+        elif [[ "$CI_COMMIT_BRANCH" == "dev" ]]; then
+          export TWINE_PASSWORD="$PYPI_TEST_TOKEN"
+          export TWINE_REPOSITORY_URL="https://test.pypi.org/legacy/"
+        else
+          echo "Skipping deployment: Not main+tag or dev branch"
+          exit 0
+      fi
+  script:
+    - twine upload dist/*
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - when: never
+
+docker_build_push:
+  tags:
+    - shell
+  stage: deploy
+  needs: ["build_package"]
+  before_script:
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
+        export REGISTRY="$DOCKER_REGISTRY"
+        export REGISTRY_USER="$DOCKER_REGISTRY_USER"
+        export REGISTRY_TOKEN="$DOCKER_REGISTRY_TOKEN"
+        export IMAGE_TAG_LATEST="$DOCKER_REGISTRY:latest"
+        export IMAGE_TAG_COMMIT="$DOCKER_REGISTRY:$CI_COMMIT_SHORT_SHA"
+      elif [[ "$CI_COMMIT_BRANCH" == "dev" ]]; then
+        export REGISTRY="$CI_REGISTRY"
+        export REGISTRY_USER="$CI_REGISTRY_USER"
+        export REGISTRY_TOKEN="$CI_REGISTRY_PASSWORD"
+        export IMAGE_TAG_LATEST="$CI_REGISTRY_IMAGE:latest"
+        export IMAGE_TAG_COMMIT="$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      else
+        echo "Skipping deployment: Not main+tag or dev branch"
+        exit 0
+      fi
+    - echo "$REGISTRY_TOKEN" | docker login -u "$REGISTRY_USER" --password-stdin "$REGISTRY"
+  script:
+    - docker buildx build --push --tag $IMAGE_TAG_LATEST --tag $IMAGE_TAG_COMMIT -f docker/Dockerfile .
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - when: never
