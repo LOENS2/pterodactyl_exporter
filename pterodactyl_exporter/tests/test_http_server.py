@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 from pterodactyl_exporter.http_server import HTTPServer
 from pterodactyl_exporter.dto.config import Config
 from pterodactyl_exporter.dto.metrics import Metrics
+from pterodactyl_exporter.enum.server_list_type import ServerListType
 
 
 class TestHTTPServer(unittest.TestCase):
@@ -13,7 +14,7 @@ class TestHTTPServer(unittest.TestCase):
             api_key="test123",
             https=True,
             ignore_ssl=False,
-            server_list_type="owner"
+            server_list_type=ServerListType.OWNER
         )
 
         http_server = HTTPServer(config)
