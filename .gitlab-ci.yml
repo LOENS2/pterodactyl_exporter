@@ -17,18 +17,24 @@ before_script:
   - pip install -U pip build twine
 
 test:
+  tags:
+    - shell
   stage: test
   script:
     - pip install .[test]
     - pytest
 
 build_package:
+  tags:
+    - shell
   stage: build
   script:
     - rm -rf dist/
     - python -m build
 
 publish_pypi:
+  tags:
+    - shell
   stage: publish
   needs: ["build_package"]
   script:
@@ -37,6 +43,8 @@ publish_pypi:
     - tags
 
 docker_build_push:
+  tags:
+    - docker
   stage: publish
   needs: ["build_package"]
   image: docker:24.0.2
