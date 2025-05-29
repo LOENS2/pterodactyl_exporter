@@ -1,11 +1,13 @@
 stages:
   - test
   - build
-  - publish
+  - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
   VENV_PATH: ".venv"
+  IMAGE_TAG_LATEST: "$DOCKER_REGISTRY:latest"
+  IMAGE_TAG_COMMIT: "$DOCKER_REGISTRY:$CI_COMMIT_SHORT_SHA"
 
 cache:
   paths:
@@ -31,21 +33,34 @@ build_package:
   script:
     - rm -rf dist/
     - python -m build
+  artifacts:
+    paths:
+      - dist/*.tar.gz
+      - dist/*.whl
 
 publish_pypi:
   tags:
     - shell
-  stage: publish
+  stage: deploy
   needs: ["build_package"]
   script:
-    - twine upload -u __token__ -p "$PYPI_TOKEN" --repository-url https://upload.pypi.org/legacy/ dist/*
-  only:
-    - tags
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        twine upload -u __token__ -P "$PYPI_TOKEN" --repository-url https://upload.pypi.org/legacy/ dist/*
+      elif [ "$CI_COMMIT_BRANCH" = "dev" ]; then
+        twine upload -u __token__ -P "$PYPI_TEST_TOKEN" --repository-url https://test.pypi.org/legacy/ dist/*
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - when: never
 
 docker_build_push:
   tags:
     - docker
-  stage: publish
+  stage: deploy
   needs: ["build_package"]
   image: docker:24.0.2
   services:
@@ -55,6 +70,10 @@ docker_build_push:
   script:
     - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_TOKEN" "$DOCKER_REGISTRY"
     - docker buildx create --use
-    - docker buildx build -t loens2/pterodactyl_exporter:latest --push -f ./docker/Dockerfile .
-  only:
-    - tags
+    - docker buildx build --push --tag $IMAGE_TAG_LATEST --tag $IMAGE_TAG_COMMIT -f docker/Dockerfile .
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - when: never
