@@ -62,7 +62,7 @@ publish_pypi:
           exit 0
       fi
   script:
-    - twine upload --repository-url "$TWINE_REPOSITORY_URL" dist/*
+    - twine upload --verbose dist/*
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG'
       when: always
