@@ -78,7 +78,7 @@ docker_build_push:
   before_script:
     - |
       if [[ -n "$CI_COMMIT_TAG" ]]; then
-        export REGISTRY="$DOCKER_REGISTRY"
+        export REGISTRY=""
         export REGISTRY_USER="$DOCKER_REGISTRY_USER"
         export REGISTRY_TOKEN="$DOCKER_REGISTRY_TOKEN"
         export IMAGE_TAG_LATEST="$DOCKER_REGISTRY:latest"
