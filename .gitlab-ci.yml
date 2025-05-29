@@ -47,7 +47,7 @@ publish_pypi:
   stage: deploy
   needs: ["build_package"]
   variables:
-    - TWINE_USERNAME: "__token__"
+    TWINE_USERNAME: "__token__"
   before_script:
     - source $VENV_PATH/bin/activate
     - |
