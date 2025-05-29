@@ -1,4 +1,3 @@
-version: "3"
 services:
   pterodactyl-exporter:
     image: loens2/pterodactyl_exporter:latest
