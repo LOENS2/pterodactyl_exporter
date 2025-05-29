@@ -5,7 +5,7 @@ from ..config_load import get_config
 
 class TestGetConfig(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open,
-           read_data="host: example.com\nport: 8080\napi_key: test123\nhttps: true\nignore_ssl: false\nserver_list_type: owner")
+           read_data="host: example.com\nport: 9531\napi_key: test123\nhttps: true\nignore_ssl: false\nserver_list_type: owner")
     def test_get_config_valid(self, mock_file_open):
         path = "test_config.yml"
 
