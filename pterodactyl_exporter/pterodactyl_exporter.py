@@ -45,14 +45,14 @@ def main():
             metrics = http_client.get_metrics()
             http_server.serve_metrics(metrics)
             log_to_console("Serverd metrics")
-            time.sleep(10)
+            time.sleep(config.query_interval)
         except http.client.RemoteDisconnected:
             log_to_console("API not responding!", True)
-            time.sleep(10)
+            time.sleep(config.query_interval)
             continue
         except Exception as e:
             log_to_console("An error occurred:", True, False, e)
-            time.sleep(10)
+            time.sleep(config.query_interval)
             continue
 
 

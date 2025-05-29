@@ -45,11 +45,13 @@ pip install pterodactyl-exporter
  
  ```yml
 host: panel.example.com
+host_port: # This is the port of the panel (optional)
 port: 9531 #Standard port for the exporter
 api_key: APIKEY_APIKEYAPIKEYAPIKEY
 https: true
 ignore_ssl: false
 server_list_type: owner
+query_interval: 10 # Interval in seconds between each query to the Pterodactyl panel (default: 10)
  ```
 
  - Create systemd service `/etc/systemd/system/pterodactyl_exporter.service`:
