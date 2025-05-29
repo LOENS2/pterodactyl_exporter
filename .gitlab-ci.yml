@@ -4,7 +4,6 @@ stages:
   - deploy
 
 variables:
-  DOCKER_DRIVER: overlay2
   VENV_PATH: ".venv"
 
 cache:
@@ -53,7 +52,7 @@ publish_pypi:
           TOKEN="$PYPI_TOKEN"
           TARGET_REPOSITORY="https://upload.pypi.org/legacy/"
         elif [[ "$CI_COMMIT_BRANCH" == "dev" ]]; then
-          TOKEN: "$PYPI_TEST_TOKEN"
+          TOKEN="$PYPI_TEST_TOKEN"
           TARGET_REPOSITORY="https://test.pypi.org/legacy/"
         else
           echo "Skipping deployment: Not main+tag or dev branch"
@@ -70,12 +69,9 @@ publish_pypi:
 
 docker_build_push:
   tags:
-    - docker
+    - shell
   stage: deploy
   needs: ["build_package"]
-  image: docker:24.0.2
-  services:
-    - docker:24.0.2-dind
   variables:
     DOCKER_BUILDKIT: 1
   before_script:
