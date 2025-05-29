@@ -1,0 +1,52 @@
+stages:
+  - test
+  - build
+  - publish
+
+variables:
+  DOCKER_DRIVER: overlay2
+  VENV_PATH: ".venv"
+
+cache:
+  paths:
+    - .venv/
+
+before_script:
+  - python3 -m venv $VENV_PATH
+  - source $VENV_PATH/bin/activate
+  - pip install -U pip build twine
+
+test:
+  stage: test
+  script:
+    - pip install .[test]
+    - pytest
+
+build_package:
+  stage: build
+  script:
+    - rm -rf dist/
+    - python -m build
+
+publish_pypi:
+  stage: publish
+  needs: ["build_package"]
+  script:
+    - twine upload -u __token__ -p "$PYPI_TOKEN" --repository-url https://upload.pypi.org/legacy/ dist/*
+  only:
+    - tags
+
+docker_build_push:
+  stage: publish
+  needs: ["build_package"]
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  variables:
+    DOCKER_BUILDKIT: 1
+  script:
+    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_TOKEN" "$DOCKER_REGISTRY"
+    - docker buildx create --use
+    - docker buildx build -t loens2/pterodactyl_exporter:latest --push -f ./docker/Dockerfile .
+  only:
+    - tags
