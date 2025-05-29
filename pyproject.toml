@@ -38,7 +38,7 @@ pterodactyl_exporter = "pterodactyl_exporter.pterodactyl_exporter:main"
 packages = ["pterodactyl_exporter"]
 
 [tool.setuptools_scm]
-version_scheme = "no-guess-dev"
+version_scheme = "post-release"
 local_scheme = "no-local-version"
 
 [tool.pytest.ini_options]
