@@ -26,8 +26,78 @@ class TestHTTPClient(unittest.TestCase):
                     'attributes': {
                         'is_suspended': False,
                         'is_installing': False,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
                         'name': 'server1',
                         'identifier': 'id1',
+                        'limits': {
+                            'memory': 1024,
+                            'swap': 0,
+                            'disk': 2048,
+                            'io': 500,
+                            'cpu': 2
+                        }
+                    }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': True,
+                        'is_installing': False,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
+                        'name': 'server2',
+                        'identifier': 'id2',
+                        'limits': {
+                            'memory': 4543,
+                            'swap': 321,
+                            'disk': 4353,
+                            'io': 23,
+                            'cpu': 3
+                        }
+                    }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': False,
+                        'is_installing': True,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
+                        'name': 'server3',
+                        'identifier': 'id3',
+                        'limits': {
+                            'memory': 6544,
+                            'swap': 43,
+                            'disk': 7544,
+                            'io': 325,
+                            'cpu': 2
+                        }
+                    }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': False,
+                        'is_installing': False,
+                        'is_transferring': True,
+                        'is_node_under_maintenance': False,
+                        'name': 'server4',
+                        'identifier': 'id4',
+                        'limits': {
+                            'memory': 1024,
+                            'swap': 0,
+                            'disk': 2048,
+                            'io': 500,
+                            'cpu': 2
+                        }
+                    }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': False,
+                        'is_installing': False,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': True,
+                        'name': 'server5',
+                        'identifier': 'id5',
                         'limits': {
                             'memory': 1024,
                             'swap': 0,
@@ -50,8 +120,10 @@ class TestHTTPClient(unittest.TestCase):
                     'attributes': {
                         'is_suspended': False,
                         'is_installing': False,
-                        'name': 'server2',
-                        'identifier': 'id2',
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
+                        'name': 'server6',
+                        'identifier': 'id6',
                         'limits': {
                             'memory': 2048,
                             'swap': 0,
@@ -133,8 +205,8 @@ class TestHTTPClient(unittest.TestCase):
         client = HTTPClient(config)
         metrics = client.get_metrics()
 
-        self.assertEqual(metrics.name, ['server1', 'server2'])
-        self.assertEqual(metrics.id, ['id1', 'id2'])
+        self.assertEqual(metrics.name, ['server1', 'server6'])
+        self.assertEqual(metrics.id, ['id1', 'id6'])
         self.assertEqual(metrics.max_memory, [1024, 2048])
         self.assertEqual(metrics.memory, [1, 2])  # bytes to MiB
         self.assertEqual(metrics.cpu, [20, 40])
