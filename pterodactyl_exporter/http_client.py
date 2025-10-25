@@ -26,7 +26,9 @@ class HTTPClient:
             servers = self.fetch_server(page)
             for server_data in servers.get('data', []):
                 if not (bool(server_data['attributes']['is_suspended']) or
-                        bool(server_data['attributes']['is_installing'])):
+                        bool(server_data['attributes']['is_installing']) or
+                        bool(server_data['attributes']['is_transferring']) or
+                        bool(server_data['attributes']['is_node_under_maintenance'])):
                     self.process_servers(server_data)
                     server_id = server_data['attributes']['identifier']
                     server_pages[server_id] = page
