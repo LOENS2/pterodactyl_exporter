@@ -34,6 +34,8 @@ class HTTPClient:
         for index, server_id in enumerate(self.metrics.id):
             page = server_pages[server_id]
             resources = self.fetch_resources(server_id, index, page)
+            if not resources:
+                continue
             self.process_resources(resources)
             self.fetch_last_backup_time(server_id, index, page)
 
@@ -62,8 +64,10 @@ class HTTPClient:
     def fetch_resources(self, server_id, index, page):
         url = f"{self.get_url()}/api/client/servers/{server_id}/resources?page={page}"
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
+        if response.status_code == 409:
+            return None
         if response.status_code != 200:
-            raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
+           raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
         response_data = response.json()
         response.close()
         return response_data["attributes"]["resources"]
