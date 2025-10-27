@@ -106,6 +106,23 @@ class TestHTTPClient(unittest.TestCase):
                             'cpu': 2
                         }
                     }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': False,
+                        'is_installing': False,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
+                        'name': 'server6',
+                        'identifier': 'id6',
+                        'limits': {
+                            'memory': 5436,
+                            'swap': 0,
+                            'disk': 3554,
+                            'io': 4350,
+                            'cpu': 5
+                        }
+                    }
                 }
             ]
         }
@@ -122,8 +139,8 @@ class TestHTTPClient(unittest.TestCase):
                         'is_installing': False,
                         'is_transferring': False,
                         'is_node_under_maintenance': False,
-                        'name': 'server6',
-                        'identifier': 'id6',
+                        'name': 'server7',
+                        'identifier': 'id7',
                         'limits': {
                             'memory': 2048,
                             'swap': 0,
@@ -192,12 +209,16 @@ class TestHTTPClient(unittest.TestCase):
             ]
         }
 
+        response_error = MagicMock()
+        response_error.status_code = 504
+
         mock_get.side_effect = [
             response_servers_page1,
             response_servers_page1,
             response_servers_page2,
             response_resources_s1,
             response_backup_s1,
+            response_error,
             response_resources_s2,
             response_backup_s2
         ]
@@ -205,16 +226,25 @@ class TestHTTPClient(unittest.TestCase):
         client = HTTPClient(config)
         metrics = client.get_metrics()
 
-        self.assertEqual(metrics.name, ['server1', 'server6'])
-        self.assertEqual(metrics.id, ['id1', 'id6'])
-        self.assertEqual(metrics.max_memory, [1024, 2048])
+        # check fetch servers
+        self.assertEqual(metrics.name, ['server1', 'server6','server7'])
+        self.assertEqual(metrics.id, ['id1', 'id6','id7'])
+        self.assertEqual(metrics.max_memory, [1024, 5436, 2048])
+        self.assertEqual(metrics.max_swap, [0, 0, 0])
+        self.assertEqual(metrics.max_disk, [2048, 3554, 4096])
+        self.assertEqual(metrics.io, [500, 4350, 1000])
+        self.assertEqual(metrics.max_cpu, [2, 5, 4])
+
+        # check fetch resources
         self.assertEqual(metrics.memory, [1, 2])  # bytes to MiB
         self.assertEqual(metrics.cpu, [20, 40])
         self.assertEqual(metrics.disk, [2, 4])
+        self.assertEqual(metrics.rx, [0.5, 1.0])
+        self.assertEqual(metrics.tx, [0.5, 1.0])
         self.assertEqual(metrics.uptime, [12345, 67890])
-        self.assertEqual(len(metrics.last_backup_time), 2)
-        self.assertGreater(metrics.last_backup_time[0], 0)
-        self.assertGreater(metrics.last_backup_time[1], 0)
+
+        # check fetch backup
+        self.assertEqual(metrics.last_backup_time, [1748520000, 1748433600])
 
 
     if __name__ == '__main__':

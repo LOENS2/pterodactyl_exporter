@@ -1,7 +1,12 @@
+import json
+
 import requests
 import time
 import dateutil.parser
+
+from .logger import log_to_console
 from .dto.config import Config
+from .dto.exception import FetchException
 from .dto.metrics import Metrics
 
 
@@ -25,6 +30,7 @@ class HTTPClient:
         for page in range(1, pages + 1):
             servers = self.fetch_server(page)
             for server_data in servers.get('data', []):
+                #print(json.dumps(server_data, indent=4))
                 if not (bool(server_data['attributes']['is_suspended']) or
                         bool(server_data['attributes']['is_installing']) or
                         bool(server_data['attributes']['is_transferring']) or
@@ -32,12 +38,43 @@ class HTTPClient:
                     self.process_servers(server_data)
                     server_id = server_data['attributes']['identifier']
                     server_pages[server_id] = page
+                elif server_data['attributes']['is_suspended']:
+                    log_to_console(
+                        "Notice:",
+                        False,
+                        False,
+                        Exception(f"Server {server_data['attributes']['name']} is suspended")
+                    )
+                elif server_data['attributes']['is_installing']:
+                    log_to_console(
+                        "Notice:",
+                        False,
+                        False,
+                        Exception(f"Server {server_data['attributes']['name']} is installing")
+                    )
+                elif server_data['attributes']['is_transferring']:
+                    log_to_console(
+                        "Notice:",
+                        False,
+                        False,
+                        Exception(f"Server {server_data['attributes']['name']} is transferring"))
+                elif server_data['attributes']['is_node_under_maintenance']:
+                    log_to_console(
+                        "Notice:",
+                        False,
+                        False,
+                        Exception(f"Server {server_data['attributes']['name']} is under maintenance")
+                    )
 
         for index, server_id in enumerate(self.metrics.id):
-            page = server_pages[server_id]
-            resources = self.fetch_resources(server_id, index, page)
-            self.process_resources(resources)
-            self.fetch_last_backup_time(server_id, index, page)
+            try:
+                page = server_pages[server_id]
+                resources = self.fetch_resources(server_id, index, page)
+                self.process_resources(resources)
+                self.fetch_last_backup_time(server_id, index, page)
+            except FetchException as e:
+                log_to_console("An error occurred:", True, False, e)
+                continue
 
         t2 = time.time()
         print(f"total= {t2 - t1}")
@@ -65,7 +102,7 @@ class HTTPClient:
         url = f"{self.get_url()}/api/client/servers/{server_id}/resources?page={page}"
         response = requests.get(url, headers=self.headers, verify=not self.config.ignore_ssl)
         if response.status_code != 200:
-            raise Exception(f"Fetch metrics for {self.metrics.name[index]}")
+            raise FetchException(f"Fetch metrics for {self.metrics.name[index]}, Stotus code: {response.status_code}")
         response_data = response.json()
         response.close()
         return response_data["attributes"]["resources"]
