@@ -26,11 +26,11 @@ class HTTPClient:
         servers = self.fetch_server()
         server_pages = {}
         pages = servers['meta']['pagination']['total_pages']
+        server_node_association: dict[str, str] = {}
 
         for page in range(1, pages + 1):
             servers = self.fetch_server(page)
             for server_data in servers.get('data', []):
-                #print(json.dumps(server_data, indent=4))
                 if not (bool(server_data['attributes']['is_suspended']) or
                         bool(server_data['attributes']['is_installing']) or
                         bool(server_data['attributes']['is_transferring']) or
@@ -38,6 +38,7 @@ class HTTPClient:
                     self.process_servers(server_data)
                     server_id = server_data['attributes']['identifier']
                     server_pages[server_id] = page
+                    server_node_association[server_id] = server_data['attributes']['node']
                 elif server_data['attributes']['is_suspended']:
                     log_to_console(
                         "Notice:",
@@ -66,14 +67,21 @@ class HTTPClient:
                         Exception(f"Server {server_data['attributes']['name']} is under maintenance")
                     )
 
+        offline_nodes = set()
+
         for index, server_id in enumerate(self.metrics.id):
             try:
-                page = server_pages[server_id]
-                resources = self.fetch_resources(server_id, index, page)
-                self.process_resources(resources)
-                self.fetch_last_backup_time(server_id, index, page)
+                if server_node_association[server_id] not in offline_nodes:
+                    page = server_pages[server_id]
+                    resources = self.fetch_resources(server_id, index, page)
+                    self.process_resources(resources)
+                    self.fetch_last_backup_time(server_id, index, page)
+                else:
+                    log_to_console(f"Server {self.metrics.name[index]} skipped, "
+                                   f"node {server_node_association[server_id]} is probably offline")
             except FetchException as e:
                 log_to_console("An error occurred:", True, False, e)
+                offline_nodes.add(server_node_association[server_id])
                 continue
 
         t2 = time.time()
