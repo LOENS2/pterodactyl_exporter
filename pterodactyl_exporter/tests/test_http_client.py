@@ -29,6 +29,7 @@ class TestHTTPClient(unittest.TestCase):
                         'is_transferring': False,
                         'is_node_under_maintenance': False,
                         'name': 'server1',
+                        'node': 'Node1',
                         'identifier': 'id1',
                         'limits': {
                             'memory': 1024,
@@ -46,6 +47,7 @@ class TestHTTPClient(unittest.TestCase):
                         'is_transferring': False,
                         'is_node_under_maintenance': False,
                         'name': 'server2',
+                        'node': 'Node1',
                         'identifier': 'id2',
                         'limits': {
                             'memory': 4543,
@@ -63,6 +65,7 @@ class TestHTTPClient(unittest.TestCase):
                         'is_transferring': False,
                         'is_node_under_maintenance': False,
                         'name': 'server3',
+                        'node': 'Node1',
                         'identifier': 'id3',
                         'limits': {
                             'memory': 6544,
@@ -80,6 +83,7 @@ class TestHTTPClient(unittest.TestCase):
                         'is_transferring': True,
                         'is_node_under_maintenance': False,
                         'name': 'server4',
+                        'node': 'Node1',
                         'identifier': 'id4',
                         'limits': {
                             'memory': 1024,
@@ -97,6 +101,7 @@ class TestHTTPClient(unittest.TestCase):
                         'is_transferring': False,
                         'is_node_under_maintenance': True,
                         'name': 'server5',
+                        'node': 'Node1',
                         'identifier': 'id5',
                         'limits': {
                             'memory': 1024,
@@ -115,12 +120,31 @@ class TestHTTPClient(unittest.TestCase):
                         'is_node_under_maintenance': False,
                         'name': 'server6',
                         'identifier': 'id6',
+                        'node': 'Node1',
                         'limits': {
                             'memory': 5436,
                             'swap': 0,
                             'disk': 3554,
                             'io': 4350,
                             'cpu': 5
+                        }
+                    }
+                },
+                {
+                    'attributes': {
+                        'is_suspended': False,
+                        'is_installing': False,
+                        'is_transferring': False,
+                        'is_node_under_maintenance': False,
+                        'name': 'server7',
+                        'identifier': 'id7',
+                        'node': 'Node1',
+                        'limits': {
+                            'memory': 7654,
+                            'swap': 0,
+                            'disk': 5474,
+                            'io': 8766,
+                            'cpu': 4
                         }
                     }
                 }
@@ -139,8 +163,9 @@ class TestHTTPClient(unittest.TestCase):
                         'is_installing': False,
                         'is_transferring': False,
                         'is_node_under_maintenance': False,
-                        'name': 'server7',
-                        'identifier': 'id7',
+                        'name': 'server8',
+                        'node': 'Node2',
+                        'identifier': 'id8',
                         'limits': {
                             'memory': 2048,
                             'swap': 0,
@@ -227,13 +252,13 @@ class TestHTTPClient(unittest.TestCase):
         metrics = client.get_metrics()
 
         # check fetch servers
-        self.assertEqual(metrics.name, ['server1', 'server6','server7'])
-        self.assertEqual(metrics.id, ['id1', 'id6','id7'])
-        self.assertEqual(metrics.max_memory, [1024, 5436, 2048])
-        self.assertEqual(metrics.max_swap, [0, 0, 0])
-        self.assertEqual(metrics.max_disk, [2048, 3554, 4096])
-        self.assertEqual(metrics.io, [500, 4350, 1000])
-        self.assertEqual(metrics.max_cpu, [2, 5, 4])
+        self.assertEqual(metrics.name, ['server1', 'server6', 'server7', 'server8'])
+        self.assertEqual(metrics.id, ['id1', 'id6', 'id7', 'id8'])
+        self.assertEqual(metrics.max_memory, [1024, 5436, 7654, 2048])
+        self.assertEqual(metrics.max_swap, [0, 0, 0,0])
+        self.assertEqual(metrics.max_disk, [2048, 3554, 5474, 4096])
+        self.assertEqual(metrics.io, [500, 4350, 8766, 1000])
+        self.assertEqual(metrics.max_cpu, [2, 5, 4, 4])
 
         # check fetch resources
         self.assertEqual(metrics.memory, [1, 2])  # bytes to MiB
